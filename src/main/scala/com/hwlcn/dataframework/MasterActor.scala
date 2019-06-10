@@ -6,6 +6,7 @@ import com.hwlcn.dataframework.InMemoryKVService.{GetKV, GetKVFailed, GetKVSucce
 import com.hwlcn.dataframework.message.MasterMessage.{MasterInfo, MasterListUpdated, WorkerTerminated}
 import com.hwlcn.dataframework.message.MasterToWorker.WorkerRegistered
 import com.hwlcn.dataframework.message.WorkerToMaster.{RegisterNewWorker, RegisterWorker, ResourceUpdate}
+import com.hwlcn.dataframework.worker.WorkerMetaData
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable
@@ -15,6 +16,7 @@ import scala.collection.immutable
   * 1. 负责调度
   * 2. 负责work node的看管
   *
+  * @author huangweili
   */
 abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
 
@@ -27,7 +29,7 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
   private var scheduler: ActorRef = null
 
   //记录workers对象
-  private var workers = new immutable.HashMap[ActorRef, WorkerId]
+  private var workers = new immutable.HashMap[ActorRef, (WorkerId, WorkerMetaData)]
 
   //下一个worker的id信息
   private var nextWorkerId = 0
@@ -82,13 +84,13 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
     */
   def appMasterHandler(): Receive
 
+
   /**
     * 处理web相关资源的访问接口
     *
     * @return
     */
   def clientHandler(): Receive
-
 
   def waitForNextWorkerId: Receive = {
     case GetKVSuccess(_, result) =>
@@ -118,7 +120,10 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
 
     //判断有没有appMasterHandler的处理对象
     if (appMasterHandler != null) {
-      handler = handler orElse appMasterHandler()
+      handler = appMasterHandler() orElse handler
+    }
+    if (clientHandler != null) {
+      handler = clientHandler() orElse handler;
     }
 
     handler orElse defaultMsgHandler(self)
@@ -135,7 +140,7 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
       logger.info(s"worker${actor.path}连接丢失!${t.getAddressTerminated}")
       if (workers.keySet.contains(actor)) {
         //在资源调度中去除worker信息
-        scheduler ! WorkerTerminated(workers(actor))
+        scheduler ! WorkerTerminated(workers(actor)._1) //根据workID 删除worker
         workers -= actor
       }
     }
@@ -154,20 +159,20 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
     */
   def workerMsgHandler: Receive = {
 
-    case RegisterNewWorker => {
+    case RegisterNewWorker(workerMetaData: WorkerMetaData) => {
       val workerId = WorkerId(nextWorkerId, System.currentTimeMillis())
       nextWorkerId += 1
       kvService ! PutKV(Constants.MASTER_GROUP, Constants.WORKER_ID, nextWorkerId)
       val workerHostname = ActorUtil.getHostname(sender())
       logger.info(s"来自${workerHostname}的worker注册....")
-      self forward RegisterWorker(workerId)
+      self forward RegisterWorker(workerId, workerMetaData)
     }
 
-    case RegisterWorker(id) => {
+    case RegisterWorker(id, workerMetaData: WorkerMetaData) => {
       context.watch(sender())
       sender ! WorkerRegistered(id, MasterInfo(self, birth))
       scheduler forward WorkerRegistered(id, MasterInfo(self, birth))
-      workers += (sender() -> id)
+      workers += (sender() -> (id, workerMetaData)) //获取worker的信息
       val workerHostname = ActorUtil.getHostname(sender())
       logger.info(s"${workerHostname}的注册ID为${id}....")
     }

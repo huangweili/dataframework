@@ -3,15 +3,12 @@ package com.hwlcn.dataframework.app
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorRef, PoisonPill, Stash}
-import akka.pattern.ask
 import com.hwlcn.dataframework.InMemoryKVService._
 import com.hwlcn.dataframework.app.AppManager.MasterState
 import com.hwlcn.dataframework.application.{ApplicationMetaData, ApplicationRuntimeInfo}
 import com.hwlcn.dataframework.message.ApplicationMessage.{GetAppData, SaveAppData}
 import com.hwlcn.dataframework.{Constants, TimeOutScheduler}
 import org.slf4j.LoggerFactory
-
-import scala.concurrent.Future
 
 /**
   * app的管理进程，每个app以独立的形式发布到cluster中
@@ -51,6 +48,19 @@ abstract class AppManagerActor(kvService: ActorRef) extends Actor with Stash wit
       stash()
   }
 
+  def clientMsgHandler(): Receive;
+
+  /**
+    * 定义Appmaster到appmanager之间的事件处理
+    *
+    * @return
+    */
+  def appMasterMessage(): Receive {
+
+
+  }
+
+
   /**
     * 处理appmanager收到的信息
     *
@@ -59,8 +69,8 @@ abstract class AppManagerActor(kvService: ActorRef) extends Actor with Stash wit
   def receiveHandler: Receive = {
     logger.info("app manager 准备就绪")
 
-    clientMsgHandler orElse appMasterMessage orElse selfMsgHandler orElse workerMessage orElse
-      appDataStoreService orElse terminationWatch
+    clientMsgHandler orElse appMasterMessage orElse
+      appDataStoreService
   }
 
 
@@ -72,20 +82,10 @@ abstract class AppManagerActor(kvService: ActorRef) extends Actor with Stash wit
   def appDataStoreService: Receive = {
     case SaveAppData(appId, key, value) =>
       val client = sender()
-      (kvService ? PutKV(appId.toString, key, value)).asInstanceOf[Future[PutKVResult]].map {
-        case PutKVSuccess =>
-          client ! AppDataSaved
-        case PutKVFailed(_, _) =>
-          client ! SaveAppDataFailed
-      }
+
     case GetAppData(appId, key) =>
       val client = sender()
-      (kvService ? GetKV(appId.toString, key)).asInstanceOf[Future[GetKVResult]].map {
-        case GetKVSuccess(_, value) =>
-          client ! GetAppDataResult(key, value)
-        case GetKVFailed(_) =>
-          client ! GetAppDataResult(key, null)
-      }
+
   }
 
   //屏蔽默认的接收函数

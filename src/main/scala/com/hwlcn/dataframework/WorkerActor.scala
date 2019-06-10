@@ -8,6 +8,7 @@ import com.hwlcn.dataframework.message.MasterMessage.MasterInfo
 import com.hwlcn.dataframework.message.MasterToWorker.{UpdateResourceFailed, UpdateResourceSucceed, WorkerRegistered}
 import com.hwlcn.dataframework.message.WorkerToMaster.{RegisterNewWorker, RegisterWorker, ResourceUpdate}
 import com.hwlcn.dataframework.scheduler.Resource
+import com.hwlcn.dataframework.worker.WorkerMetaData
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._
@@ -26,7 +27,9 @@ abstract class WorkerActor(masterProxy: ActorRef) extends Actor with TimeOutSche
   private val address = ActorUtil.getFullPath(context.system, self.path)
 
   private var id: WorkerId = WorkerId.unspecified
-  private var masterInfo: MasterInfo = MasterInfo.empty;
+
+  private var masterInfo: MasterInfo = MasterInfo.empty
+
   private var resource = Resource.empty
   private val resourceUpdateTimeoutMs = 30000L // Milliseconds
 
@@ -42,7 +45,7 @@ abstract class WorkerActor(masterProxy: ActorRef) extends Actor with TimeOutSche
     //totalSlots = systemConfig.getInt(GEARPUMP_WORKER_SLOTS)
     //this.resource = Resource(totalSlots)
     //通过代理发送注册信息到master上
-    masterProxy ! RegisterNewWorker
+    masterProxy ! RegisterNewWorker(workerMetaInfo())
     // 等待注册信息返回
     context.become(waitForMasterConfirm(registerTimeoutTicker(seconds = 30)))
   }
@@ -79,7 +82,7 @@ abstract class WorkerActor(masterProxy: ActorRef) extends Actor with TimeOutSche
     * @return
     */
   def waitForMasterConfirm(timeoutTicker: Cancellable): Receive = {
-
+    // 返回worker的注册信息
     case WorkerRegistered(id, masterInfo) =>
       //取消超时定时器
       timeoutTicker.cancel()
@@ -103,6 +106,13 @@ abstract class WorkerActor(masterProxy: ActorRef) extends Actor with TimeOutSche
       //注册成功后worker转换为 service 状态正式提供服务
       context.become(service)
   }
+
+  /**
+    * 定义worker的基础信息master和client根据worker的基础信息来获取worker的信息
+    *
+    * @return
+    */
+  def workerMetaInfo(): WorkerMetaData;
 
   /**
     * 服务功能包装
@@ -184,7 +194,7 @@ abstract class WorkerActor(masterProxy: ActorRef) extends Actor with TimeOutSche
     repeatActionUtil(
       seconds = timeOutSeconds,
       action = () => {
-        masterProxy ! RegisterWorker(workerId)
+        masterProxy ! RegisterWorker(workerId, workerMetaInfo())
       },
       onTimeout = () => {
         logger.error(s"在${timeOutSeconds}秒内重新注册worker:[$workerId]失败，worker将被关闭...")

@@ -21,8 +21,11 @@ object WorkerId {
     new WorkerId(pair(1).toInt, pair(0).toLong)
   }
 
-  implicit val workerIdOrdering: Ordering[WorkerId] = {
 
+  /**
+    * 定义work的排序信息
+    */
+  implicit val workerIdOrdering: Ordering[WorkerId] = {
     new Ordering[WorkerId] {
       override def compare(x: WorkerId, y: WorkerId): Int = {
         if (x.registerTime < y.registerTime) {

@@ -2,6 +2,7 @@ package com.hwlcn.dataframework.default
 
 import akka.actor.ActorRef
 import com.hwlcn.dataframework.WorkerActor
+import com.hwlcn.dataframework.worker.WorkerMetaData
 
 class DefaultWorker(proxy: ActorRef) extends WorkerActor(proxy) {
 
@@ -22,4 +23,13 @@ class DefaultWorker(proxy: ActorRef) extends WorkerActor(proxy) {
     * @return
     */
   override def appMsgHandler(): Receive = null
+
+  /**
+    * 定义worker的基础信息master和client根据worker的基础信息来获取worker的信息
+    *
+    * @return
+    */
+  override def workerMetaInfo(): WorkerMetaData = {
+    new WorkerMetaData();
+  }
 }
