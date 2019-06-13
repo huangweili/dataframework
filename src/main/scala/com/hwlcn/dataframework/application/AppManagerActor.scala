@@ -21,7 +21,7 @@ import scala.concurrent.Future
   *
   * @author huangweili
   */
-abstract class AppManagerActor(kvService: ActorRef) extends Actor with Stash with TimeOutScheduler {
+abstract class AppManagerActor(kvService: ActorRef, launcher: ApplicationLauncherFactory) extends Actor with Stash with TimeOutScheduler {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -211,7 +211,7 @@ abstract class AppManagerActor(kvService: ActorRef) extends Actor with Stash wit
         val launcherID = UUID.randomUUID().toString;
         //重新启动一个Appmaster信息
         context.actorOf(launcher.props(appId, Constants.APPMASTER_DEFAULT_EXECUTOR_ID, state.getAppDesc,
-          state.getJar, state.getUsername, context.parent, None), s"launcher${appId}_${launcherID}")
+          Option(state.getJar), state.getUsername, context.parent, None), s"launcher${appId}_${launcherID}")
 
       } else {
         logger.error(s"Application $appId 的重启次数超过了限制次数。")

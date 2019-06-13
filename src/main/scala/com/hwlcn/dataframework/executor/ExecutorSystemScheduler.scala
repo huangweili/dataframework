@@ -1,12 +1,14 @@
 package com.hwlcn.dataframework.executor
 
 import akka.actor.{Actor, ActorRef, Cancellable, Props}
-import com.hwlcn.dataframework.Constants
 import com.hwlcn.dataframework.application.AppJar
+import com.hwlcn.dataframework.executor.ExecutorSystemLauncher.{LaunchExecutorSystem, LaunchExecutorSystemRejected, LaunchExecutorSystemSuccess, LaunchExecutorSystemTimeout}
 import com.hwlcn.dataframework.executor.ExecutorSystemScheduler._
 import com.hwlcn.dataframework.message.AppMasterToMaster.RequestResource
 import com.hwlcn.dataframework.message.MasterToAppMaster.ResourceAllocated
 import com.hwlcn.dataframework.scheduler.{ResourceAllocation, ResourceRequest}
+import com.hwlcn.dataframework.worker.WorkerInfo
+import com.hwlcn.dataframework.{Constants, WorkerId}
 import com.typesafe.config.Config
 import org.slf4j.LoggerFactory
 
@@ -58,7 +60,7 @@ class ExecutorSystemScheduler(appId: Int, masterProxy: ActorRef,
           val ResourceAllocation(resource, worker, workerId) = resourceAllocation
 
           val launcher = context.actorOf(executorSystemLauncher(appId, session))
-          launcher ! LaunchExecutorSystem(WorkerInfo(workerId, worker), currentSystemId, resource)
+          launcher ! LaunchExecutorSystem(new WorkerInfo(workerId, worker), currentSystemId, resource)
           currentSystemId = currentSystemId + 1
         }
       }
@@ -70,26 +72,31 @@ class ExecutorSystemScheduler(appId: Int, masterProxy: ActorRef,
       }
   }
 
+  /**
+    * Executor执行器的消息通信
+    *
+    * @return
+    */
   def executorSystemMessageHandler: Receive = {
     case LaunchExecutorSystemSuccess(system, session) =>
       if (isSessionAlive(session)) {
-        LOG.info("LaunchExecutorSystemSuccess, send back to " + session.requestor)
+        logger.info("LaunchExecutorSystemSuccess, send back to " + session.requestor)
         system.bindLifeCycleWith(self)
         session.requestor ! ExecutorSystemStarted(system, session.executorSystemJvmConfig.jar)
       } else {
-        LOG.error("We get a ExecutorSystem back, but resource requestor is no longer valid. " +
+        logger.error("We get a ExecutorSystem back, but resource requestor is no longer valid. " +
           "Will shutdown the allocated system")
         system.shutdown
       }
     case LaunchExecutorSystemTimeout(session) =>
       if (isSessionAlive(session)) {
-        LOG.error(s"Failed to launch executor system for ${session.requestor} due to timeout")
+        logger.error(s"Failed to launch executor system for ${session.requestor} due to timeout")
         session.requestor ! StartExecutorSystemTimeout
       }
 
     case LaunchExecutorSystemRejected(resource, reason, session) =>
       if (isSessionAlive(session)) {
-        LOG.error(s"Failed to launch executor system, due to $reason, " +
+        logger.error(s"Failed to launch executor system, due to $reason, " +
           s"will ask master to allocate new resources $resource")
         resourceAgents.get(session).foreach { resourceAgent: ActorRef =>
           resourceAgent ! RequestResource(appId, ResourceRequest(resource, WorkerId.unspecified))
@@ -120,13 +127,15 @@ object ExecutorSystemScheduler {
 
   class ResourceAgent(master: ActorRef, session: Session) extends Actor {
     private var resourceRequestor: ActorRef = null
+
     var timeOutClock: Cancellable = null
+
     private var unallocatedResource: Int = 0
 
     import context.dispatcher
 
-    private val timeout = context.system.settings.config
-      .getInt(GEARPUMP_RESOURCE_ALLOCATION_TIMEOUT)
+    //定义资源分配的超时时间
+    private val timeout = 30
 
     def receive: Receive = {
       case request: RequestResource =>

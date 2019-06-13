@@ -66,4 +66,7 @@ object ApplicationMessage {
 
   case class ActorSystemRegistered(bindLifeWith: ActorRef)
 
+
+  case class RegisterActorSystemFailed(reason: Throwable)
+
 }

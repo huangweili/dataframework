@@ -28,4 +28,7 @@ object Constants {
   //试用feture时的 超时定义
   final val FUTURE_TIMEOUT = akka.util.Timeout(15, TimeUnit.SECONDS)
 
+  //TODO 这里的前缀最好加上系统名称
+  final val SYSTEM_USERNAME = "system.username"
+  final val REMOTE_DEBUG_PORT = "remote-debug-port"
 }

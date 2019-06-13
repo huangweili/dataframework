@@ -10,6 +10,7 @@ import com.hwlcn.dataframework.message.ApplicationMessage.{ActorSystemRegistered
 import com.hwlcn.dataframework.message.MasterToAppMaster.ResourceAllocated
 import com.hwlcn.dataframework.message.WorkerToAppMaster.ExecutorLaunchRejected
 import com.hwlcn.dataframework.scheduler.{Resource, ResourceAllocation, ResourceRequest}
+import com.hwlcn.dataframework.system.ActorSystemBooter
 import com.hwlcn.dataframework.worker.WorkerInfo
 import com.hwlcn.dataframework.{ActorUtil, ClusterConfig, HostPort, WorkerId}
 import org.slf4j.LoggerFactory
@@ -80,7 +81,6 @@ class ApplicationLauncher(appId: Int, executorId: Int, app: AppDescription,
       worker ! LaunchExecutor(appId, executorId, resource, executorJVM)
       context.become(waitForActorSystemToStart(worker, appMasterContext, resource))
     }
-
   }
 
 
@@ -131,8 +131,6 @@ class ApplicationLauncher(appId: Int, executorId: Int, app: AppDescription,
   }
 
   override def receive: Receive = ???
-
-
 }
 
 
@@ -143,6 +141,9 @@ object ApplicationLauncher extends ApplicationLauncherFactory {
   }
 }
 
+/**
+  * App 加载启动器
+  */
 trait ApplicationLauncherFactory {
   def props(appId: Int, executorId: Int, app: AppDescription, jar: Option[AppJar],
             username: String, master: ActorRef, client: Option[ActorRef]): Props
