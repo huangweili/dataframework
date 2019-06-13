@@ -10,4 +10,5 @@ import com.hwlcn.dataframework.scheduler.ResourceRequest
 object AppMasterToMaster {
 
   case class RequestResource(appId: Int, request: ResourceRequest)
+
 }

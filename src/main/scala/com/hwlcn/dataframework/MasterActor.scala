@@ -99,7 +99,7 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
       } else {
         logger.warn("在集群中没有找到相应的资源信息")
       }
-      context.become(receiveHandler)
+      context.become(receive)
       unstashAll()
     case GetKVFailed(ex) =>
       logger.error("数据分片出现问题..系统将关闭", ex)
@@ -114,10 +114,8 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
     *
     * @return
     */
-  def receiveHandler: Receive = {
-
+  def receive: Receive = {
     var handler = workerMsgHandler orElse onMasterListChange orElse terminationWatch orElse disassociated
-
     //判断有没有appMasterHandler的处理对象
     if (appMasterHandler != null) {
       handler = appMasterHandler() orElse handler
@@ -152,6 +150,9 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
       this.masters = masters
   }
 
+
+
+
   /**
     * 定义worker向master发起资源注册的信息
     *
@@ -182,9 +183,4 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
     }
 
   }
-
-
-  //屏蔽默认的接收器
-  override def receive: Receive = null
-
 }

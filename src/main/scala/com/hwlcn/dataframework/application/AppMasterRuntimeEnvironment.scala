@@ -114,7 +114,7 @@ object AppMasterRuntimeEnvironment {
     }
   }
 
-  private[appmaster]
+
   object LazyStartAppMaster {
     def props(appContext: AppMasterContext, app: AppDescription): Props = {
       val appMasterProps = Props(Class.forName(app.getAppMaster), appContext, app)
@@ -122,7 +122,8 @@ object AppMasterRuntimeEnvironment {
     }
   }
 
-  private[appmaster] case object StartAppMaster
+
+  case object StartAppMaster
 
 
   class MasterWithExecutorSystemProvider(master: ActorRef, executorSystemProviderProps: Props)

@@ -1,7 +1,6 @@
 package com.hwlcn.dataframework.application;
 
-
-import jdk.internal.joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 
 import java.io.Serializable;
 

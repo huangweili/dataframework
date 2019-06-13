@@ -18,17 +18,17 @@ public class WorkerMetaData implements Serializable {
 
     public WorkerMetaData() {
         this.id = UUID.randomUUID().toString();
-        this.type = WorkerType.Short;
+        this.type = WorkerType.APP;
     }
 
-    public WorkerMetaData(String id, WorkerType type) {
+    public WorkerMetaData(String id, int type) {
         this.id = id;
         this.type = type;
     }
 
     private String id;  //worker的唯一标识用来识别worker的信息
 
-    private WorkerType type; //worker的类型
+    private int type; //worker的类型
 
 
     public String getId() {
@@ -39,11 +39,11 @@ public class WorkerMetaData implements Serializable {
         this.id = id;
     }
 
-    public WorkerType getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(WorkerType type) {
+    public void setType(int type) {
         this.type = type;
     }
 }

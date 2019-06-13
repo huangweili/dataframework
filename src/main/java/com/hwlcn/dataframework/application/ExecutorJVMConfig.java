@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 用来定义 worker执行器的配置信息
+ *
  * @author huangweili
  */
 public class ExecutorJVMConfig implements Serializable {
@@ -14,7 +15,15 @@ public class ExecutorJVMConfig implements Serializable {
     public ExecutorJVMConfig() {
     }
 
-    public ExecutorJVMConfig(List<String> classPath, List<String> jvmArguments, String mainClass, List<String> arguments, AppJar jar, String userName, Config akkaConfig) {
+
+    public ExecutorJVMConfig(List<String> classPath,
+                             List<String> jvmArguments,
+                             String mainClass,
+                             List<String> arguments,
+                             AppJar jar,
+                             String userName,
+                             Config akkaConfig
+    ) {
         this.classPath = classPath;
         this.jvmArguments = jvmArguments;
         this.mainClass = mainClass;

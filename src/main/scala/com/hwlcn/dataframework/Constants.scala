@@ -16,6 +16,17 @@ object Constants {
   // worker相关的配置文件信息
   final val WORK_CONFIG = "worker.conf"
 
+  final val APPMASTER_CONFIG = "appmaster.conf"
+
+  final val APPMASTER_ARGS = "appmaster.vmargs"
+
+  final val EXECUTOR_ARGS = "executor.vmargs"
+
+
+  final val APPMASTER_EXTRA_CLASSPATH = "appmaster.extraClasspath"
+
+  final val EXECUTOR_EXTRA_CLASSPATH = "executor.extraClasspath"
+
   final val MASTER_GROUP = "master_group"
 
   final val WORKER_ID = "next_worker_id"

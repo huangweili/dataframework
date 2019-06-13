@@ -157,8 +157,7 @@ abstract class AppManagerActor(kvService: ActorRef, launcher: ApplicationLaunche
     */
   def terminationWatch: Receive = {
     case terminate: Terminated =>
-      logger.info(s"AppMaster(${terminate.actor.path}) 已经终止, " +
-        s"network: ${terminate.getAddressTerminated}")
+      logger.info(s"AppMaster(${terminate.actor.path}) 已经终止。${terminate.getAddressTerminated}")
 
       applicationRegistry.find(_._2.getAppMaster.equals(terminate.actor)).foreach {
         case (appId, info) =>
@@ -174,7 +173,7 @@ abstract class AppManagerActor(kvService: ActorRef, launcher: ApplicationLaunche
                   val appMetadata = result.asInstanceOf[ApplicationMetaData]
                   if (appMetadata != null) {
                     logger.info(s"恢复应用:${appId}的信息")
-                    val updatedInfo = new ApplicationStatus(ApplicationStatusConstants.PENDING)
+                    val updatedInfo = info.copy(new ApplicationStatus(ApplicationStatusConstants.PENDING))
                     applicationRegistry += appId -> updatedInfo
                     self ! RecoverApplication(appMetadata)
                   } else {

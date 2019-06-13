@@ -31,6 +31,12 @@ public class ApplicationRuntimeInfo implements Serializable {
         this.status = status;
     }
 
+    public ApplicationRuntimeInfo copy(ApplicationStatus status) {
+        ApplicationRuntimeInfo info = new ApplicationRuntimeInfo(this.appId, this.appName, this.appMaster, this.worker, this.user, this.submissionTime, this.startTime, this.finishTime, this.config);
+        info.setStatus(status);
+        return info;
+    }
+
     public ApplicationRuntimeInfo() {
         this.status = new ApplicationStatus(ApplicationStatusConstants.NONEXIST);
     }

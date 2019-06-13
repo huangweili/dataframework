@@ -13,6 +13,7 @@ import com.hwlcn.dataframework.scheduler.{Resource, ResourceAllocation, Resource
 import com.hwlcn.dataframework.system.ActorSystemBooter
 import com.hwlcn.dataframework.worker.WorkerInfo
 import com.hwlcn.dataframework.{ActorUtil, ClusterConfig, HostPort, WorkerId}
+import com.typesafe.config.Config
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
@@ -37,7 +38,9 @@ class ApplicationLauncher(appId: Int, executorId: Int, app: AppDescription,
   //系统的配置信息
   private val systemConfig = context.system.settings.config
 
-  private val masterConfig = ClusterConfig.master();
+
+  private val appMasterAkkaConfig: Config = app.getClusterConfig;
+
 
   //定义交互超时时间
   private val TIMEOUT = Duration(15, TimeUnit.SECONDS)
@@ -71,12 +74,17 @@ class ApplicationLauncher(appId: Int, executorId: Int, app: AppDescription,
 
       val selfPath = ActorUtil.getFullPath(context.system, self.path)
 
-      val jvmSetting =
-        Util.resolveJvmSetting(appMasterAkkaConfig.withFallback(systemConfig)).appMater
+      val jvmSetting = ClusterConfig.resolveJvmSetting(appMasterAkkaConfig.withFallback(systemConfig)).getAppMater
 
-      val executorJVM = new ExecutorJVMConfig(jvmSetting.classPath, jvmSetting.vmargs,
-        classOf[ActorSystemBooter].getName, Array(name, selfPath), jar,
-        username, appMasterAkkaConfig)
+      val executorJVM: ExecutorJVMConfig = new ExecutorJVMConfig(
+        jvmSetting.getClassPath,
+        jvmSetting.getVmargs,
+        classOf[ActorSystemBooter].getName,
+        Array(name, selfPath).toList.asJava,
+        jar.getOrElse(null),
+        username,
+        appMasterAkkaConfig
+      )
 
       worker ! LaunchExecutor(appId, executorId, resource, executorJVM)
       context.become(waitForActorSystemToStart(worker, appMasterContext, resource))
@@ -94,8 +102,11 @@ class ApplicationLauncher(appId: Int, executorId: Int, app: AppDescription,
     case RegisterActorSystem(systemPath) =>
       logger.info(s"Received RegisterActorSystem $systemPath for AppMaster")
       sender ! ActorSystemRegistered(worker)
+
+
       //获取集群的种子
-      val masterAddress = masterConfig.getStringList("master.masters").asScala.map(HostPort(_)).map(ActorUtil.getMasterActorPath)
+      val masterAddress = systemConfig.getStringList("master.masters").asScala.map(HostPort(_)).map(ActorUtil.getMasterActorPath)
+
       sender ! CreateActor(AppMasterRuntimeEnvironment.props(masterAddress, app, appContext),
         s"appdaemon$appId")
       import context.dispatcher

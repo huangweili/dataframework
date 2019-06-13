@@ -8,9 +8,11 @@ import com.hwlcn.dataframework.message.AppMasterToWorker.LaunchExecutor
 import com.hwlcn.dataframework.message.ApplicationMessage.{ActorSystemRegistered, RegisterActorSystem}
 import com.hwlcn.dataframework.message.WorkerToAppMaster.ExecutorLaunchRejected
 import com.hwlcn.dataframework.scheduler.Resource
+import com.hwlcn.dataframework.system.ActorSystemBooter
 import com.hwlcn.dataframework.worker.WorkerInfo
 import org.slf4j.LoggerFactory
 
+import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
 /**
@@ -85,8 +87,12 @@ object ExecutorSystemLauncher {
                                    reportBack: String): ExecutorJVMConfig = {
     Option(conf).map { conf =>
       import conf._
-      new ExecutorJVMConfig(classPath, jvmArguments, classOf[ActorSystemBooter].getName,
-        Array(systemName, reportBack), jar, username, executorAkkaConfig)
+      new ExecutorJVMConfig(
+        classPath.toList.asJava,
+        jvmArguments.toList.asJava,
+        classOf[ActorSystemBooter].getName,
+        Array(systemName, reportBack).toList.asJava,
+        jar.getOrElse(null), username, executorAkkaConfig)
     }.orNull
   }
 }
