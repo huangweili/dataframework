@@ -3,11 +3,11 @@ package com.hwlcn.dataframework.application
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorRef, Cancellable}
-import com.hwlcn.dataframework.MasterProxy.{MasterRestarted, MasterStopped, WatchMaster}
 import com.hwlcn.dataframework.application.MasterConnectionKeeper.AppMasterRegisterTimeout
-import com.hwlcn.dataframework.application.MasterConnectionKeeper.MasterConnectionStatus.MasterConnected
 import com.hwlcn.dataframework.message.AppManagerToAppMaster.AppMasterRegistered
 import com.hwlcn.dataframework.message.AppMasterToAppManager.RegisterAppMaster
+import com.hwlcn.dataframework.message.MasterMessage.{MasterConnected, MasterRestarted, MasterStopped}
+import com.hwlcn.dataframework.worker.MasterProxy.WatchMaster
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration.FiniteDuration
@@ -17,9 +17,9 @@ import scala.concurrent.duration.FiniteDuration
   *
   * @author huangweili
   */
-class MasterConnectionKeeper(
-                              register: RegisterAppMaster, masterProxy: ActorRef, masterStatusListener: ActorRef)
-  extends Actor {
+class MasterConnectionKeeper(register: RegisterAppMaster,
+                             masterProxy: ActorRef,
+                             masterStatusListener: ActorRef) extends Actor {
 
   import context.dispatcher
 
@@ -61,14 +61,6 @@ class MasterConnectionKeeper(
 object MasterConnectionKeeper {
 
   case object AppMasterRegisterTimeout
-
-  object MasterConnectionStatus {
-
-    case object MasterConnected
-
-    case object MasterStopped
-
-  }
 
 }
 

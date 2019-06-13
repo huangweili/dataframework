@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, PoisonPill, Props, Stash, Terminated}
 import akka.remote.DisassociatedEvent
 import com.hwlcn.dataframework.InMemoryKVService.{GetKV, GetKVFailed, GetKVSuccess, PutKV}
 import com.hwlcn.dataframework._
+import com.hwlcn.dataframework.application.ApplicationLauncher
 import com.hwlcn.dataframework.message.MasterMessage.{MasterInfo, MasterListUpdated, WorkerTerminated}
 import com.hwlcn.dataframework.message.MasterToWorker.WorkerRegistered
 import com.hwlcn.dataframework.message.WorkerToMaster.{RegisterNewWorker, RegisterWorker, ResourceUpdate}
@@ -19,7 +20,7 @@ import scala.collection.immutable
   *
   * @author huangweili
   */
-abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
+abstract class MasterActor(schedulerClass: Class[_], appManagerClass: Class[_]) extends Actor with Stash {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -41,6 +42,10 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
   //获取本master的信息
   private val hostPort = HostPort(ActorUtil.getSystemAddress(context.system).hostPort)
 
+  /**
+    * appManager的代理对象
+    */
+  private var appManager: ActorRef = null
 
   //初始haul masters对象
   private var masters: List[MasterNode] = {
@@ -55,14 +60,10 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
 
 
   override def preStart(): Unit = {
-
-    appManager = context.actorOf(Props(new AppManager(kvService, AppMasterLauncher)),
-      classOf[AppManager].getSimpleName)
-
-
+    //根据传入的appMananger的class管理结构
+    appManager = context.actorOf(Props(appManagerClass, kvService, ApplicationLauncher), "appManager")
     //初始化资源调度器
     scheduler = context.actorOf(Props(schedulerClass))
-
     //监听事件丢失的情况
     context.system.eventStream.subscribe(self, classOf[DisassociatedEvent])
   }

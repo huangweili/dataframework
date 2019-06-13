@@ -41,6 +41,8 @@ abstract class AppManagerActor(kvService: ActorRef, launcher: ApplicationLaunche
   private var appMasterRestartPolicies = Map.empty[Int, RestartPolicy]
 
 
+
+
   /** *
     * 保存APP运行后的结果信息
     */

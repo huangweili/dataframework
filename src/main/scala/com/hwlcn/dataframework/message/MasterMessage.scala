@@ -21,4 +21,12 @@ object MasterMessage {
   case class WorkerTerminated(workerId: WorkerId)
 
 
+
+  case object MasterRestarted
+  //失去master的连接对象时的事件
+  case object MasterStopped
+
+  case object MasterConnected
+
+
 }

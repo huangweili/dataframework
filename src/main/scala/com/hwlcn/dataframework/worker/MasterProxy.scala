@@ -1,6 +1,8 @@
 package com.hwlcn.dataframework.worker
 
 import akka.actor.{Actor, ActorIdentity, ActorPath, ActorRef, Cancellable, Identify, PoisonPill, Props, Scheduler, Stash, Terminated}
+import com.hwlcn.dataframework.message.MasterMessage.{MasterRestarted, MasterStopped}
+import com.hwlcn.dataframework.worker.MasterProxy.WatchMaster
 import com.hwlcn.dataframework.{ActorUtil, HostPort}
 import org.slf4j.LoggerFactory
 
@@ -127,11 +129,6 @@ class MasterProxy(masters: Iterable[ActorPath], timeout: FiniteDuration) extends
 object MasterProxy {
 
   import scala.concurrent.duration._
-
-  case object MasterRestarted
-
-  //失去master的连接对象时的事件
-  case object MasterStopped
 
   //添加可用的master对象
   case class WatchMaster(watcher: ActorRef)

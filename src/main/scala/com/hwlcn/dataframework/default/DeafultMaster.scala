@@ -1,9 +1,10 @@
 package com.hwlcn.dataframework.default
 
+import com.hwlcn.dataframework.application.AppManagerActor
 import com.hwlcn.dataframework.master.MasterActor
 import com.hwlcn.dataframework.scheduler.SchedulerActor
 
-class DeafultMaster(schedulerClass: Class[SchedulerActor]) extends MasterActor(schedulerClass) {
+class DeafultMaster(schedulerClass: Class[SchedulerActor], appManagerClass: Class[AppManagerActor]) extends MasterActor(schedulerClass, appManagerClass) {
 
   /**
     * 与appMaster的事件处理
