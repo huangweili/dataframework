@@ -41,6 +41,8 @@ object Master {
       //获取调度类
       val schedulerClass = Class.forName(masterConfig.getString("master.scheduler-class"))
 
+      //获取应用管理类
+      val appManagerClass = Class.forName(masterConfig.getString("master.appmanager-class"))
 
       //获取seed的列表
       val masters = masterConfig.getStringList("master.masters").asScala
@@ -62,7 +64,7 @@ object Master {
 
       // 启动单点管理器
       val _ = system.actorOf(ClusterSingletonManager.props(
-        singletonProps = Props(classOf[MasterWatcher], Constants.MASTER, masterClass, schedulerClass),
+        singletonProps = Props(classOf[MasterWatcher], Constants.MASTER, masterClass, schedulerClass, appManagerClass),
         terminationMessage = PoisonPill,
         settings = ClusterSingletonManagerSettings(system).withSingletonName(Constants.MASTER_WATCHER)
           .withRole(Constants.MASTER)),

@@ -6,6 +6,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.cluster.ClusterEvent._
 import akka.cluster.{Cluster, Member, MemberStatus}
 import com.hwlcn.dataframework.Constants
+import com.hwlcn.dataframework.application.AppManagerActor
 import com.hwlcn.dataframework.message.MasterMessage.MasterListUpdated
 import com.hwlcn.dataframework.message.MasterWatcherMessage
 import com.hwlcn.dataframework.scheduler.SchedulerActor
@@ -18,7 +19,10 @@ import scala.concurrent.duration.Duration
 
 
 class MasterWatcher(
-                     role: String, masterClass: Class[_ >: MasterActor], schedulerClass: Class[_ >: SchedulerActor]
+                     role: String,
+                     masterClass: Class[_ >: MasterActor],
+                     schedulerClass: Class[_ >: SchedulerActor],
+                     appManagerClass: Class[_ >: AppManagerActor]
                    ) extends Actor {
 
   import context.dispatcher
@@ -76,7 +80,7 @@ class MasterWatcher(
         self ! MasterWatcherMessage.Shutdown
       } else {
         //创建master正式启动系统
-        val master = context.actorOf(Props(masterClass, schedulerClass), Constants.MASTER)
+        val master = context.actorOf(Props(masterClass, schedulerClass, appManagerClass), Constants.MASTER)
 
         //变动master的成员信息，每个master node节点的成员信息 实际上是有watcher来维护的
         notifyMasterMembersChange(master)

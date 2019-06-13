@@ -132,8 +132,7 @@ object MasterProxy {
 
   //添加可用的master对象
   case class WatchMaster(watcher: ActorRef)
-
-
+  
   def props(masters: Iterable[HostPort], duration: FiniteDuration = 30.seconds): Props = {
     val contacts = masters.map(ActorUtil.getMasterActorPath)
     Props(new MasterProxy(contacts, duration))

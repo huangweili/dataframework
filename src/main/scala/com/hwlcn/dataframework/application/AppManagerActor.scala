@@ -23,7 +23,7 @@ import scala.concurrent.Future
   */
 abstract class AppManagerActor(kvService: ActorRef, launcher: ApplicationLauncherFactory) extends Actor with Stash with TimeOutScheduler {
 
-  private val logger = LoggerFactory.getLogger(getClass)
+  protected val logger = LoggerFactory.getLogger(getClass)
 
   //定义超时时间
   implicit val timeout = akka.util.Timeout(15, TimeUnit.SECONDS)
