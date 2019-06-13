@@ -12,7 +12,7 @@ import com.hwlcn.dataframework.message.WorkerToAppMaster.ExecutorLaunchRejected
 import com.hwlcn.dataframework.scheduler.{Resource, ResourceAllocation, ResourceRequest}
 import com.hwlcn.dataframework.system.ActorSystemBooter
 import com.hwlcn.dataframework.worker.WorkerInfo
-import com.hwlcn.dataframework.{ActorUtil, ClusterConfig, HostPort, WorkerId}
+import com.hwlcn.dataframework.{ActorUtil, ClusterConfig, HostPort}
 import com.typesafe.config.Config
 import org.slf4j.LoggerFactory
 

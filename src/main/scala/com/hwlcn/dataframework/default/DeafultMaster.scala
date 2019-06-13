@@ -1,7 +1,6 @@
 package com.hwlcn.dataframework.default
 
-
-import com.hwlcn.dataframework.MasterActor
+import com.hwlcn.dataframework.master.MasterActor
 import com.hwlcn.dataframework.scheduler.SchedulerActor
 
 class DeafultMaster(schedulerClass: Class[SchedulerActor]) extends MasterActor(schedulerClass) {

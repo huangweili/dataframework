@@ -2,7 +2,7 @@ package com.hwlcn.dataframework.main
 
 import akka.actor.{ActorSystem, Props}
 import com.hwlcn.dataframework.util.NetUtil
-import com.hwlcn.dataframework.{ClusterConfig, Constants, HostPort, MasterProxy}
+import com.hwlcn.dataframework.{ClusterConfig, Constants, HostPort}
 import com.typesafe.config.ConfigValueFactory
 import org.slf4j.LoggerFactory
 

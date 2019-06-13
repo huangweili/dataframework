@@ -1,13 +1,12 @@
 package com.hwlcn.dataframework.application
 
 import akka.actor.{Actor, ActorPath, ActorRef, Props, Stash, Terminated}
-import com.hwlcn.dataframework.MasterProxy
-import com.hwlcn.dataframework.MasterProxy.MasterStopped
 import com.hwlcn.dataframework.application.AppMasterRuntimeEnvironment.{AppId, ListenerActorRef, MasterActorRef, StartAppMaster}
 import com.hwlcn.dataframework.application.MasterConnectionKeeper.MasterConnectionStatus.MasterConnected
 import com.hwlcn.dataframework.executor.ExecutorSystemScheduler.{Session, StartExecutorSystems}
 import com.hwlcn.dataframework.executor.{ExecutorSystemLauncher, ExecutorSystemScheduler}
 import com.hwlcn.dataframework.message.AppMasterToAppManager.RegisterAppMaster
+import com.hwlcn.dataframework.worker.MasterProxy
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._

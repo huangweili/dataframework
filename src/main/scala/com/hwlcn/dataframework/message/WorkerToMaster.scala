@@ -1,9 +1,8 @@
 package com.hwlcn.dataframework.message
 
 import akka.actor.ActorRef
-import com.hwlcn.dataframework.WorkerId
 import com.hwlcn.dataframework.scheduler.Resource
-import com.hwlcn.dataframework.worker.WorkerMetaData
+import com.hwlcn.dataframework.worker.{WorkerId, WorkerMetaData}
 
 /**
   * work发送信息给master

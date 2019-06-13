@@ -1,7 +1,6 @@
 package com.hwlcn.dataframework.worker;
 
 import akka.actor.ActorRef;
-import com.hwlcn.dataframework.WorkerId;
 
 import java.io.Serializable;
 import java.util.Objects;

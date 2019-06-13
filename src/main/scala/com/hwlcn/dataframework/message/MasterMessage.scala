@@ -1,7 +1,8 @@
 package com.hwlcn.dataframework.message
 
 import akka.actor.ActorRef
-import com.hwlcn.dataframework.{MasterNode, WorkerId}
+import com.hwlcn.dataframework.master.MasterNode
+import com.hwlcn.dataframework.worker.WorkerId
 
 object MasterMessage {
 

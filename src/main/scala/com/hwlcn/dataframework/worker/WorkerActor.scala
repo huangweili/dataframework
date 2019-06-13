@@ -1,5 +1,4 @@
-package com.hwlcn.dataframework
-
+package com.hwlcn.dataframework.worker
 
 import java.util.concurrent.TimeUnit
 
@@ -8,7 +7,7 @@ import com.hwlcn.dataframework.message.MasterMessage.MasterInfo
 import com.hwlcn.dataframework.message.MasterToWorker.{UpdateResourceFailed, UpdateResourceSucceed, WorkerRegistered}
 import com.hwlcn.dataframework.message.WorkerToMaster.{RegisterNewWorker, RegisterWorker, ResourceUpdate}
 import com.hwlcn.dataframework.scheduler.Resource
-import com.hwlcn.dataframework.worker.WorkerMetaData
+import com.hwlcn.dataframework.{ActorUtil, TimeOutScheduler}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._

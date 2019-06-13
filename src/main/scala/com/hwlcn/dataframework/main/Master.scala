@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{ActorSystem, PoisonPill, Props}
 import akka.cluster.Cluster
 import akka.cluster.singleton.{ClusterSingletonManager, ClusterSingletonManagerSettings, ClusterSingletonProxy, ClusterSingletonProxySettings}
+import com.hwlcn.dataframework.master.MasterWatcher
 import com.hwlcn.dataframework.util.NetUtil
 import com.hwlcn.dataframework.{ClusterConfig, Constants}
 import com.typesafe.config.ConfigValueFactory
@@ -61,7 +62,7 @@ object Master {
 
       // 启动单点管理器
       val _ = system.actorOf(ClusterSingletonManager.props(
-        singletonProps = Props(classOf[com.hwlcn.dataframework.MasterWatcher], Constants.MASTER, masterClass, schedulerClass),
+        singletonProps = Props(classOf[MasterWatcher], Constants.MASTER, masterClass, schedulerClass),
         terminationMessage = PoisonPill,
         settings = ClusterSingletonManagerSettings(system).withSingletonName(Constants.MASTER_WATCHER)
           .withRole(Constants.MASTER)),

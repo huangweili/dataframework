@@ -1,10 +1,10 @@
 package com.hwlcn.dataframework.scheduler
 
 import akka.actor.ActorRef
-import com.hwlcn.dataframework.WorkerId
 import com.hwlcn.dataframework.message.AppMasterToMaster.RequestResource
 import com.hwlcn.dataframework.message.MasterToAppMaster.ResourceAllocated
 import com.hwlcn.dataframework.scheduler.Scheduler.PendingRequest
+import com.hwlcn.dataframework.worker.WorkerId
 
 import scala.collection.mutable
 

@@ -1,4 +1,4 @@
-package com.hwlcn.dataframework
+package com.hwlcn.dataframework.worker
 
 /**
   * 定义workerId ,用来在master中标识workder的信息

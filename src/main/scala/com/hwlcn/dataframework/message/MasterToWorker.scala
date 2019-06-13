@@ -1,7 +1,7 @@
 package com.hwlcn.dataframework.message
 
-import com.hwlcn.dataframework.WorkerId
 import com.hwlcn.dataframework.message.MasterMessage.MasterInfo
+import com.hwlcn.dataframework.worker.WorkerId
 
 /**
   * master 到 worker的通信

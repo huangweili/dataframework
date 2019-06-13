@@ -1,11 +1,11 @@
 package com.hwlcn.dataframework.scheduler
 
 import akka.actor.{Actor, ActorRef}
-import com.hwlcn.dataframework.WorkerId
 import com.hwlcn.dataframework.message.MasterMessage.WorkerTerminated
 import com.hwlcn.dataframework.message.MasterToWorker.{UpdateResourceFailed, UpdateResourceSucceed, WorkerRegistered}
 import com.hwlcn.dataframework.message.WorkerToMaster.ResourceUpdate
 import com.hwlcn.dataframework.scheduler.Scheduler.ApplicationFinished
+import com.hwlcn.dataframework.worker.WorkerId
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable

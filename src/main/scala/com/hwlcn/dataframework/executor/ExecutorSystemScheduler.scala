@@ -1,6 +1,7 @@
 package com.hwlcn.dataframework.executor
 
 import akka.actor.{Actor, ActorRef, Cancellable, Props}
+import com.hwlcn.dataframework.Constants
 import com.hwlcn.dataframework.application.AppJar
 import com.hwlcn.dataframework.executor.ExecutorSystemLauncher.{LaunchExecutorSystem, LaunchExecutorSystemRejected, LaunchExecutorSystemSuccess, LaunchExecutorSystemTimeout}
 import com.hwlcn.dataframework.executor.ExecutorSystemScheduler._
@@ -8,7 +9,6 @@ import com.hwlcn.dataframework.message.AppMasterToMaster.RequestResource
 import com.hwlcn.dataframework.message.MasterToAppMaster.ResourceAllocated
 import com.hwlcn.dataframework.scheduler.{ResourceAllocation, ResourceRequest}
 import com.hwlcn.dataframework.worker.WorkerInfo
-import com.hwlcn.dataframework.{Constants, WorkerId}
 import com.typesafe.config.Config
 import org.slf4j.LoggerFactory
 

@@ -1,9 +1,9 @@
 package com.hwlcn.dataframework.scheduler
 
 import akka.actor.ActorRef
-import com.hwlcn.dataframework.WorkerId
 import com.hwlcn.dataframework.scheduler.Priority.Priority
 import com.hwlcn.dataframework.scheduler.Relaxation.Relaxation
+import com.hwlcn.dataframework.worker.WorkerId
 
 /**
   * 定义资源对象，通过slot表示一个worker的资源的多少

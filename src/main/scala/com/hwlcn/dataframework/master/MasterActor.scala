@@ -1,12 +1,13 @@
-package com.hwlcn.dataframework
+package com.hwlcn.dataframework.master
 
 import akka.actor.{Actor, ActorRef, PoisonPill, Props, Stash, Terminated}
 import akka.remote.DisassociatedEvent
 import com.hwlcn.dataframework.InMemoryKVService.{GetKV, GetKVFailed, GetKVSuccess, PutKV}
+import com.hwlcn.dataframework._
 import com.hwlcn.dataframework.message.MasterMessage.{MasterInfo, MasterListUpdated, WorkerTerminated}
 import com.hwlcn.dataframework.message.MasterToWorker.WorkerRegistered
 import com.hwlcn.dataframework.message.WorkerToMaster.{RegisterNewWorker, RegisterWorker, ResourceUpdate}
-import com.hwlcn.dataframework.worker.WorkerMetaData
+import com.hwlcn.dataframework.worker.{WorkerId, WorkerMetaData}
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable
@@ -54,10 +55,10 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
 
 
   override def preStart(): Unit = {
-    /*
+
     appManager = context.actorOf(Props(new AppManager(kvService, AppMasterLauncher)),
       classOf[AppManager].getSimpleName)
-    */
+
 
     //初始化资源调度器
     scheduler = context.actorOf(Props(schedulerClass))
@@ -151,8 +152,6 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
   }
 
 
-
-
   /**
     * 定义worker向master发起资源注册的信息
     *
@@ -175,6 +174,9 @@ abstract class MasterActor(schedulerClass: Class[_]) extends Actor with Stash {
       scheduler forward WorkerRegistered(id, MasterInfo(self, birth))
       workers += (sender() -> (id, workerMetaData)) //获取worker的信息
       val workerHostname = ActorUtil.getHostname(sender())
+
+      //TODO 把注册完成的 service的 work 添加到服务发现路由中
+
       logger.info(s"${workerHostname}的注册ID为${id}....")
     }
 

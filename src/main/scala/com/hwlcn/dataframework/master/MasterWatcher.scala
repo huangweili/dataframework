@@ -1,9 +1,11 @@
-package com.hwlcn.dataframework
+package com.hwlcn.dataframework.master
+
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.cluster.ClusterEvent._
 import akka.cluster.{Cluster, Member, MemberStatus}
+import com.hwlcn.dataframework.Constants
 import com.hwlcn.dataframework.message.MasterMessage.MasterListUpdated
 import com.hwlcn.dataframework.message.MasterWatcherMessage
 import com.hwlcn.dataframework.scheduler.SchedulerActor

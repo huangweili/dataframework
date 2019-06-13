@@ -1,7 +1,7 @@
-package com.hwlcn.dataframework
+package com.hwlcn.dataframework.worker
 
 import akka.actor.{Actor, ActorIdentity, ActorPath, ActorRef, Cancellable, Identify, PoisonPill, Props, Scheduler, Stash, Terminated}
-import com.hwlcn.dataframework.MasterProxy.{MasterRestarted, MasterStopped, WatchMaster}
+import com.hwlcn.dataframework.{ActorUtil, HostPort}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration.FiniteDuration

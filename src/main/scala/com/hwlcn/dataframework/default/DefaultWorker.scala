@@ -1,8 +1,7 @@
 package com.hwlcn.dataframework.default
 
 import akka.actor.ActorRef
-import com.hwlcn.dataframework.WorkerActor
-import com.hwlcn.dataframework.worker.WorkerMetaData
+import com.hwlcn.dataframework.worker.{WorkerActor, WorkerMetaData}
 
 class DefaultWorker(proxy: ActorRef) extends WorkerActor(proxy) {
 
