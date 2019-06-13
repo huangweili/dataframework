@@ -11,18 +11,28 @@ import java.io.Serializable;
  * @author huangweili
  */
 public class ApplicationRuntimeInfo implements Serializable {
-    
+
     private int appId;
     private String appName;
     private ActorRef appMaster;
     private ActorRef worker;
-    private String user;
-    private long submissionTime;
-    private long startTime;
-    private long finishTime;
+    private String user;         //提交人
+    private long submissionTime; //app的提交时间
+    private long startTime;      //开始时间
+    private long finishTime;     //结束时间
     private Config config;
+    private ApplicationStatus status;       //app状态
+
+    public ApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ApplicationStatus status) {
+        this.status = status;
+    }
 
     public ApplicationRuntimeInfo() {
+        this.status = new ApplicationStatus(ApplicationStatusConstants.NONEXIST);
     }
 
     public ApplicationRuntimeInfo(int appId, String appName, ActorRef appMaster, ActorRef worker, String user, long submissionTime, long startTime, long finishTime, Config config) {
@@ -35,6 +45,31 @@ public class ApplicationRuntimeInfo implements Serializable {
         this.startTime = startTime;
         this.finishTime = finishTime;
         this.config = config;
+    }
+
+
+    /**
+     * 注册状态的app runtime
+     *
+     * @return
+     */
+    public ApplicationRuntimeInfo onAppMasterRegistered(ActorRef appMaster, ActorRef worker) {
+        this.appMaster = appMaster;
+        this.worker = worker;
+        this.status = new ApplicationStatus(ApplicationStatusConstants.PENDING);
+        return this;
+    }
+
+    public ApplicationRuntimeInfo onAppMasterActivated(long timestamp) {
+        this.startTime = timestamp;
+        this.status = new ApplicationStatus(ApplicationStatusConstants.ACTIVE);
+        return this;
+    }
+
+    public ApplicationRuntimeInfo onFinalStatus(long timeStamp, ApplicationStatus finalStatus) {
+        this.finishTime = timeStamp;
+        this.status = finalStatus;
+        return this;
     }
 
     public int getAppId() {

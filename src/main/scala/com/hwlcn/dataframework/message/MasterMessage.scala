@@ -19,4 +19,5 @@ object MasterMessage {
   //worker终止事件
   case class WorkerTerminated(workerId: WorkerId)
 
+
 }

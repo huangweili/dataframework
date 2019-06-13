@@ -1,6 +1,7 @@
 package com.hwlcn.dataframework.message
 
 import akka.actor.ActorRef
+import com.hwlcn.dataframework.application.ApplicationStatus
 import com.hwlcn.dataframework.worker.WorkerInfo
 
 /**
@@ -12,5 +13,8 @@ object AppMasterToAppManager {
 
   case class RegisterAppMaster(appId: Int, appMaster: ActorRef, workerInfo: WorkerInfo)
 
+  //app状态改变事件
+  case class ApplicationStatusChanged(appId: Int, newStatus: ApplicationStatus,
+                                      timeStamp: Long)
 
 }

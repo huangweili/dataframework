@@ -13,6 +13,15 @@ object ActorUtil {
     ActorPath.fromString(s"akka.tcp://${Constants.MASTER}@${master.host}:${master.port}/user/${Constants.MASTER}")
   }
 
+  /**
+    * 定义一个Executor的名称
+    * @param appId
+    * @param executorId
+    * @return
+    */
+  def actorNameForExecutor(appId: Int, executorId: Int): String = "app_" + appId + "_executor_" +
+    executorId
+
 
   def getSystemAddress(system: ActorSystem): Address = {
     system.asInstanceOf[ExtendedActorSystem].provider.getDefaultAddress
@@ -47,4 +56,6 @@ object ActorUtil {
     val path = actor.path
     path.address.host.getOrElse("localhost")
   }
+
+
 }
