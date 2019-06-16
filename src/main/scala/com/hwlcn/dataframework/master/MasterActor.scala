@@ -118,7 +118,6 @@ abstract class MasterActor(schedulerClass: Class[_], appManagerClass: Class[_]) 
 
     //获取master的信息
     case GetMasterData =>
-
       val aliveFor = System.currentTimeMillis() - birth
 
       val userDir = System.getProperty("user.dir")
