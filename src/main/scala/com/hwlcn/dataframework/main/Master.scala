@@ -55,7 +55,9 @@ object Master {
         withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(port)).
         withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(ip)).
         withValue("akka.cluster.seed-nodes", ConfigValueFactory.fromAnyRef(masterList)).
-        withValue(s"akka.cluster.role.${Constants.MASTER}.min-nr-of-members", ConfigValueFactory.fromAnyRef(quorum))
+        withValue(s"akka.cluster.role.${Constants.MASTER}.min-nr-of-members", ConfigValueFactory.fromAnyRef(quorum)).
+        withFallback(masterConfig)
+
 
       logger.info(s"启动系统:$ip:$port, 种子列表: ${masters.mkString(";")}")
 

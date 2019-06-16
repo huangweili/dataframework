@@ -14,6 +14,7 @@ import scala.concurrent.duration.Duration
 
 /**
   * worker的启动对象
+  *
   * @au
   */
 object Worker {
@@ -34,9 +35,10 @@ object Worker {
     val port = workerConfig.getInt("worker.port")
     val config = clusterConfig.getConfig("default.worker").
       withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(port)).
-      withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(ip));
+      withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(ip)).
+      withFallback(workerConfig) //把workerConfig的信息融入到systemConfig中
 
-    val systemName = workerConfig.getString("worker.system-name");
+    val systemName = workerConfig.getString("worker.system-name")
     //初始化对象
     val system = ActorSystem(systemName, config);
 
@@ -53,7 +55,7 @@ object Worker {
 
     //定义唯一的系统名称
     system.actorOf(Props(workerClass, masterProxy), Constants.WORKER)
-    
+
     //阻塞主线程
     Await.result(system.whenTerminated, Duration.Inf)
   }

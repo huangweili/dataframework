@@ -39,6 +39,10 @@ object Constants {
   //试用feture时的 超时定义
   final val FUTURE_TIMEOUT = akka.util.Timeout(15, TimeUnit.SECONDS)
 
+  //应用的jar存储地址
+  final val APP_JAR_STORE_ROOT_PATH = "master.app.jarstore.rootpath"
+
+
   //TODO 这里的前缀最好加上系统名称
   final val SYSTEM_USERNAME = "system.username"
   final val REMOTE_DEBUG_PORT = "remote-debug-port"

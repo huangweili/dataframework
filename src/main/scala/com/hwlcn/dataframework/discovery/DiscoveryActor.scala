@@ -1,6 +1,7 @@
 package com.hwlcn.dataframework.discovery
 
 import akka.actor.{Actor, ActorRef}
+import com.hwlcn.dataframework.message.DiscoverMessage.{DiscoveryRequest, DiscoveryWorkers}
 import org.slf4j.LoggerFactory
 
 /**
@@ -18,45 +19,16 @@ class DiscoveryActor(master: ActorRef) extends Actor {
   private var registedServices = Map.empty[String, List[ActorRef]]
 
   override def receive: Receive = {
-    workerMsgHandler orElse notHandlerMsg
-  }
-
-  /**
-    * worker注册，注销相关的信息操作
-    *
-    * @return
-    */
-  def workerMsgHandler: Receive = {
-    case _ => {
-
+    case r: DiscoveryRequest => {
+      val client = sender()
+      val workers = registedServices.getOrElse(s"${r.workerType}_${r.groupId}", Nil)
+      client ! DiscoveryWorkers(workers)
     }
-  }
 
-
-  /**
-    * 处理client端对服务发现的请求
-    *
-    * @return
-    */
-  def clientMsgHandler: Receive = {
-    case _ => {
-
-    }
-  }
-
-
-  def notHandlerMsg: Receive = {
     case msg => {
-      logger.info(s"接收到未处理的消息${msg}")
+      logger.info(s"接收来自${sender()}的未处理消息${msg}")
     }
   }
 
 }
 
-/**
-  * 服务发现相关的信息
-  */
-object DiscoveryMessage {
-
-
-}

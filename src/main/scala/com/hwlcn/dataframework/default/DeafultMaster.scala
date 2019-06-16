@@ -7,16 +7,22 @@ import com.hwlcn.dataframework.scheduler.SchedulerActor
 class DeafultMaster(schedulerClass: Class[SchedulerActor], appManagerClass: Class[AppManagerActor]) extends MasterActor(schedulerClass, appManagerClass) {
 
   /**
-    * 与appMaster的事件处理
+    * 消息处理类
     *
     * @return
     */
-  override def appMasterHandler(): Receive = null
+  override def receive: Receive = super.receive orElse otherHandler;
 
-  /**
-    * 处理web相关资源的访问接口
+
+  /** *
+    * 扩展定义其他要处理的事件
     *
     * @return
     */
-  override def clientHandler(): Receive = null
+  def otherHandler: Receive = {
+    case msg => {
+      logger.info(s"otherHandler 接收到的信息${msg}")
+    }
+  }
+
 }

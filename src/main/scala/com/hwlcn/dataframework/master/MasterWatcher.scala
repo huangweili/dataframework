@@ -115,7 +115,7 @@ class MasterWatcher(
   //通知master列表变更信息
   private def notifyMasterMembersChange(master: ActorRef): Unit = {
     val masters = membersByAge.toList.map { member =>
-      MasterNode(member.address.host.getOrElse("Unknown-Host"),
+      new MasterNode(member.address.host.getOrElse("Unknown-Host"),
         member.address.port.getOrElse(0))
     }
     master ! MasterListUpdated(masters)
